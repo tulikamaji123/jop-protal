@@ -1,7 +1,7 @@
 @extends ('layout')
 @section('content')
 <h2>Add Job</h2>
-<form action="{{route('jobs.store')}}"  method="POST">
+<form action="{{route('jobs.store')}}"  method="POST" enctype="multipart/form-data">
     @csrf
     <div class="mb-2">
         <label for="">Title</label>
@@ -22,6 +22,10 @@
      <div class="mb-2">
         <label for="">Salary</label>
         <input type="number" name="salary" class="form-control">
+    </div>
+      <div class="mb-2">
+        <label for="">Student Image</label>
+        <input type="file" name="image" class="form-control">
     </div>
     <br>
 <button type="submit" class="btn btn-success">Add Job</button>

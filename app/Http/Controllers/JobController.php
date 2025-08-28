@@ -12,9 +12,8 @@ class JobController extends Controller
      */
     public function index()
     {
-        //view all job
         $jobdata = Job::all();
-        return view('jobs.index',compact('jobdata'));
+        return view('jobs.index', compact('jobdata'));
     }
 
     /**
@@ -22,9 +21,7 @@ class JobController extends Controller
      */
     public function create()
     {
-        //add job
-         return view('jobs.create');
-
+        return view('jobs.create');
     }
 
     /**
@@ -32,67 +29,88 @@ class JobController extends Controller
      */
     public function store(Request $request)
     {
-        //store new data
         $request->validate([
-            'title'=>'required',
-            'description'=>'required',
-            'company'=>'required',
-            'location'=>'required',
-            'salary'=>'required',
-
+            'title' => 'required',
+            'description' => 'required',
+            'company' => 'required',
+            'location' => 'required',
+            'salary' => 'required',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
-        job::create($request->all());
-        return redirect()->route('jobs.index')
-        ->with('success','jobs added successfully');
+
+        $data = $request->only(['title','description','company','location','salary']);
+
+        if ($request->hasFile('image')) {
+            $filename = time() . '_' . $request->image->getClientOriginalName();
+            $request->image->move(public_path('uploads/jobs'), $filename);
+            $data['image'] = $filename;
+        }
+
+        Job::create($data);
+
+        return redirect()->route('jobs.index')->with('success', 'Job created successfully.');
     }
 
     /**
      * Display the specified resource.
      */
-public function show(Job $job)    {
-        //show single job details
-        return view('jobs.show',compact('job'));
-
+    public function show(Job $job)
+    {
+        return view('jobs.show', compact('job'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-public function edit(Job $job)
+    public function edit(Job $job)
     {
-        //single view with details
-        return view('jobs.edit',compact('job'));
+        return view('jobs.edit', compact('job'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-public function update(Request $request, Job $job)
+    public function update(Request $request, Job $job)
     {
-        //update all job
-         $request->validate([
-            'title'=>'required',
-            'description'=>'required',
-            'company'=>'required',
-            'location'=>'required',
-            'salary'=>'required',
-
+        $request->validate([
+            'title' => 'required',
+            'description' => 'required',
+            'company' => 'required',
+            'location' => 'required',
+            'salary' => 'required',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
-        $job->update($request->all());
-         return redirect()->route('jobs.index')
-        ->with('success','jobs update successfully');
 
+        $data = $request->only(['title','description','company','location','salary']);
+
+        if ($request->hasFile('image')) {
+            if ($job->image && file_exists(public_path('uploads/jobs/' . $job->image))) {
+                unlink(public_path('uploads/jobs/' . $job->image));
+            }
+
+            $filename = time() . '_' . $request->image->getClientOriginalName();
+            $request->image->move(public_path('uploads/jobs'), $filename);
+            $data['image'] = $filename;
+        } else {
+            $data['image'] = $job->image;
+        }
+
+        $job->update($data);
+
+        return redirect()->route('jobs.index')->with('success', 'Job updated successfully.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-public function destroy(Job $job)
+    public function destroy(Job $job)
     {
-        //
-         $job->delete();
-         return redirect()->route('jobs.index')
-        ->with('success','jobs deleted successfully');
+        if ($job->image && file_exists(public_path('uploads/jobs/' . $job->image))) {
+            unlink(public_path('uploads/jobs/' . $job->image));
+        }
 
+        $job->delete();
+
+        return redirect()->route('jobs.index')->with('success', 'Job deleted successfully.');
     }
 }

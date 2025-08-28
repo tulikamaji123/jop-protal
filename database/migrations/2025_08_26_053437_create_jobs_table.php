@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('company');
             $table->string('location');
             $table->decimal('salary', 10, 2);
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }

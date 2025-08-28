@@ -12,5 +12,6 @@ class Job extends Model
         'company',
         'location',
         'salary',
+        'image'
     ];
 }

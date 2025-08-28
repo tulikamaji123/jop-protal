@@ -11,9 +11,11 @@
 <tr>
     <th>ID</th>
     <th>Title</th>
+    <th>Description</th>
     <th>Company</th>
     <th>Location</th>
     <th>Salary</th>
+    <th>Image</th>
     <th>Action</th>
 </tr>
 
@@ -21,9 +23,18 @@
 <tr>
     <td> {{$x->id}} </td>
     <td> {{$x->title}} </td>
+    <td> {{$x->description}} </td>
     <td> {{$x->company}} </td>
     <td> {{$x->location}} </td>
     <td> {{$x->salary}} </td>
+    <td>
+      @if($x->image)
+    <img src="{{ asset('uploads/jobs/'.$x->image) }}" alt="" width="100">
+@else
+    <p>no image</p>
+@endif
+
+    </td>
    <td>
     <a href="{{ route('jobs.show', $x->id) }}" class="btn btn-info btn-sm">Show</a>
     <a href="{{ route('jobs.edit', $x->id) }}" class="btn btn-primary btn-sm">Edit</a>
